@@ -2,27 +2,65 @@ import { useGSAP } from "@gsap/react";
 import { flavorlists } from "../constants";
 import gsap from "gsap";
 import { useRef } from "react";
+import { useMediaQuery } from "react-responsive";
 
 const FlavorSlider = () => {
   const sliderRef = useRef(null);
 
+  const isTable = useMediaQuery({
+    query: "(max-width: 1024px)",
+  });
+
   useGSAP(() => {
     const scrollAmount = sliderRef.current.scrollWidth - window.innerWidth;
 
-    const timeline = gsap.timeline({
+    if (!isTable) {
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: ".flavor-section",
+          start: "2% top",
+          end: `+=${scrollAmount + 1000}px`,
+          scrub: true,
+          pin: true,
+        },
+      });
+
+      timeline.to(".flavor-section", {
+        x: `-${scrollAmount + 1000}px`,
+        ease: "power1.inOut",
+      });
+    }
+
+    const titleTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: ".flavor-section",
-        start: "2% top",
-        end: `+=${scrollAmount + 1000}px`,
+        start: "top top",
+        end: "bottom 80%",
         scrub: true,
-        pin: true,
       },
     });
 
-    timeline.to(".flavor-section", {
-      x: `-${scrollAmount + 1000}px`,
-      ease: "power1.inOut",
-    });
+    titleTimeline
+      .to(".first-text-split", {
+        xPercent: -30,
+        ease: "power1.inOut",
+      })
+      .to(
+        ".flavor-text-scroll",
+        {
+          xPercent: -22,
+          ease: "power1.inOut",
+        },
+        "<"
+      )
+      .to(
+        ".second-text-split",
+        {
+          xPercent: -10,
+          ease: "power1.inOut",
+        },
+        "<"
+      );
   });
 
   return (
@@ -31,22 +69,23 @@ const FlavorSlider = () => {
         {flavorlists.map((flavor) => (
           <div
             key={flavor.name}
-            className={`relative z-30 ${flavor.rotation} lg:w-[50vw] w-96 
-            lg:h-[70vh] md:w-[90vw] md:h-[50vh] h-80 flex-none`}
+            className={`relative z-30 lg:w-[50vw] w-96 lg:h-[70vh] md:w-[90vw] md:h-[50vh] h-80 flex-none ${flavor.rotation}`}
           >
             <img
               src={`/images/${flavor.color}-bg.svg`}
-              alt="bg-flavor"
+              alt=""
               className="absolute bottom-0"
             />
+
             <img
               src={`/images/${flavor.color}-drink.webp`}
-              alt="drinks"
+              alt=""
               className="drinks"
             />
+
             <img
               src={`/images/${flavor.color}-elements.webp`}
-              alt="elements"
+              alt=""
               className="elements"
             />
 
